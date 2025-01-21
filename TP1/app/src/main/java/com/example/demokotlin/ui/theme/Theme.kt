@@ -1,16 +1,31 @@
 package com.example.demokotlin.ui.theme
 
-import android.app.Activity
 import android.os.Build
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -44,6 +59,75 @@ val DarkColorPalette = darkColorScheme(
     onBackground = Color.White,
     onSurface = Color.White,
 )
+
+@Composable
+fun AppBackground(content: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF785C65), // Brun-violacé
+                        Color(0xFF765A5E), // Rouge-brun doux
+                        Color(0xFF6C5054)  // Sombre
+                    )
+                )
+            )
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun GradientButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .height(48.dp)
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        Color(0xFFf7971e), // Orange chaud
+                        Color(0xFFff5858)  // Rouge chaud
+                    )
+                ),
+                shape = MaterialTheme.shapes.medium
+            )
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            color = Color.White,
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+@Composable
+fun TextArea(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String,
+    icon: @Composable (() -> Unit)? = null,
+    visualTransformation: VisualTransformation = VisualTransformation.None
+) {
+    OutlinedTextField(
+        value = value, onValueChange = onValueChange,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        placeholder = { Text(label) },
+        leadingIcon = icon,
+        visualTransformation = visualTransformation,
+    )
+}
 
 @Composable
 fun DemoKotlinTheme(
