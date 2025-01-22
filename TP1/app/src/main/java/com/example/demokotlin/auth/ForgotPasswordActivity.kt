@@ -1,5 +1,6 @@
 package com.example.demokotlin.auth
 
+import ForgotPasswordViewModele
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.demokotlin.ui.theme.AppBackground
+import com.example.demokotlin.ui.theme.DialogBox
 import com.example.demokotlin.ui.theme.GradientButton
 import com.example.demokotlin.ui.theme.TextArea
 
@@ -36,14 +38,14 @@ class ForgotPasswordActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppBackground {
-                ForgotPasswordFormPage()
+                ForgotPasswordFormPage(viewModel = ForgotPasswordViewModele())
             }
         }
     }
 }
 
 @Composable
-fun ForgotPasswordFormPage() {
+fun ForgotPasswordFormPage(viewModel: ForgotPasswordViewModele) {
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.Transparent) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             Column(modifier = Modifier.padding(vertical = 60.dp)) {
@@ -58,18 +60,20 @@ fun ForgotPasswordFormPage() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)) {
-                var email by remember { mutableStateOf("") }
-                TextArea(value = email, onValueChange = {newText -> email = newText}, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
+                TextArea(value = viewModel.email.value, onValueChange = {newText -> viewModel.email.value = newText}, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
                     Icon(
                         imageVector = Icons.Default.Email,
                         contentDescription = "Email Icon"
                     )
                 })
                 GradientButton(
-                    onClick = {},
+                    onClick = {viewModel.onForgotPasswordCheck()},
                     modifier = Modifier.fillMaxWidth(),
                     text = "Changer de mot de passe",
                 )
+                if (viewModel.showDialog.value) {
+                    DialogBox(message = viewModel.dialogMessage.value, onDismiss = { viewModel.showDialog.value = false }, modifier = Modifier.padding(top = 60.dp))
+                }
             }
         }
     }
@@ -79,6 +83,6 @@ fun ForgotPasswordFormPage() {
 @Composable
 fun GreetingPreview2() {
     AppBackground {
-        ForgotPasswordFormPage()
+        ForgotPasswordFormPage(viewModel = ForgotPasswordViewModele())
     }
 }

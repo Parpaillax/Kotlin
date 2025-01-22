@@ -1,5 +1,6 @@
 package com.example.demokotlin
 
+import LoginViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,7 +18,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppBackground {
-                LoginFormPage()
+                LoginFormPage(viewModel = LoginViewModel())
 //                  SignupFormPage()
 //                ForgotPasswordFormPage()
             }
@@ -29,7 +30,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     AppBackground {
-        LoginFormPage()
+        LoginFormPage(viewModel = LoginViewModel())
 //        SignupFormPage()
 //        ForgotPasswordFormPage()
     }

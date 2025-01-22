@@ -1,5 +1,6 @@
 package com.example.demokotlin.auth
 
+import LoginViewModel
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -24,23 +24,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.demokotlin.movie.MovieActivity
 import com.example.demokotlin.ui.theme.AppBackground
+import com.example.demokotlin.ui.theme.DialogBox
 import com.example.demokotlin.ui.theme.GradientButton
 import com.example.demokotlin.ui.theme.TextArea
 
@@ -50,18 +47,17 @@ class LoginActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppBackground {
-                LoginFormPage()
+                LoginFormPage(viewModel = LoginViewModel())
             }
         }
     }
 }
 
 @Composable
-fun LoginFormPage() {
+fun LoginFormPage(viewModel: LoginViewModel) {
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.Transparent) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             val context = LocalContext.current
-
             Column(modifier = Modifier.padding(vertical = 60.dp)) {
                 Icon(
                     imageVector = Icons.Sharp.AccountCircle,
@@ -85,15 +81,13 @@ fun LoginFormPage() {
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
-                var email by remember { mutableStateOf("") }
-                TextArea(value = email, onValueChange = { newText -> email = newText }, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
+                TextArea(value = viewModel.email.value, onValueChange = { newText -> viewModel.email.value = newText }, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
                     Icon(
                         imageVector = Icons.Default.Email,
                         contentDescription = "Email Icon"
                     )},
                 )
-                var password by remember { mutableStateOf("") }
-                TextArea(value = password, onValueChange = {newText -> password = newText}, modifier = Modifier.fillMaxWidth(), label = "Password", icon = {
+                TextArea(value = viewModel.password.value, onValueChange = {newText -> viewModel.password.value = newText}, modifier = Modifier.fillMaxWidth(), label = "Password", icon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
                         contentDescription = "Password Icon"
@@ -105,7 +99,7 @@ fun LoginFormPage() {
                     .clickable(onClick = { navigateToForgotPassword(context) }), contentAlignment = Alignment.Center) {
                     Text(text = "J'ai oublié mon mot de passe !", textAlign = TextAlign.Center, style = TextStyle(textDecoration = TextDecoration.Underline))
                 }
-                GradientButton(onClick = {}, text = "Se connecter", modifier = Modifier.fillMaxWidth())
+                GradientButton(onClick = {navigateToMoviesList(context)}, text = "Se connecter", modifier = Modifier.fillMaxWidth())
                 Column(modifier = Modifier.padding(vertical = 160.dp)) {
                     Text(text= "Toujours pas inscris ?!", textAlign = TextAlign.Center, modifier = Modifier
                         .fillMaxWidth()
@@ -116,9 +110,18 @@ fun LoginFormPage() {
                         Text(text = "S'inscire", textAlign = TextAlign.Center, style = TextStyle(textDecoration = TextDecoration.Underline))
                     }
                 }
+                if (viewModel.showDialog.value) {
+                    DialogBox(
+                        message = viewModel.dialogMessage.value,
+                        onDismiss = { viewModel.showDialog.value = false },
+                        modifier = Modifier.padding(top = 120.dp)
+                    )
+                }
             }
         }
     }
+
+
 }
 
 fun navigateToSignUpActivity(context: Context) {
@@ -129,10 +132,14 @@ fun navigateToForgotPassword(context: Context) {
     context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
 }
 
+fun navigateToMoviesList(context: Context) {
+    context.startActivity(Intent(context, MovieActivity::class.java))
+}
+
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
     AppBackground {
-        LoginFormPage()
+        LoginFormPage(viewModel = LoginViewModel())
     }
 }

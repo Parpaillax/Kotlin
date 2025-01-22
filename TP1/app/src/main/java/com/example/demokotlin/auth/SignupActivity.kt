@@ -1,5 +1,6 @@
 package com.example.demokotlin.auth
 
+import SignupViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.LocationOn
@@ -23,20 +23,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.demokotlin.ui.theme.AppBackground
+import com.example.demokotlin.ui.theme.DialogBox
 import com.example.demokotlin.ui.theme.GradientButton
 import com.example.demokotlin.ui.theme.TextArea
 
@@ -46,14 +42,14 @@ class SignupActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppBackground {
-                SignupFormPage()
+                SignupFormPage(viewModel = SignupViewModel())
             }
         }
     }
 }
 
 @Composable
-fun SignupFormPage() {
+fun SignupFormPage(viewModel: SignupViewModel) {
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.Transparent) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             Column(modifier = Modifier.padding(40.dp)) {
@@ -76,58 +72,54 @@ fun SignupFormPage() {
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
-                var pseudo by remember { mutableStateOf("") }
-                TextArea(value = pseudo, onValueChange = {newText -> pseudo = newText}, modifier = Modifier.fillMaxWidth(), label = "Pseudo", icon = {
+                TextArea(value = viewModel.user.value.pseudo, onValueChange = {viewModel.updatePseudo(it)}, modifier = Modifier.fillMaxWidth(), label = "Pseudo", icon = {
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = "Nickname Icon"
                     )
                 })
-                var email by remember { mutableStateOf("") }
-                TextArea(value = email, onValueChange = {newText -> email = newText}, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
+                TextArea(value = viewModel.user.value.email, onValueChange = {viewModel.updateEmail(it)}, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
                     Icon(
                         imageVector = Icons.Default.MailOutline,
                         contentDescription = "Nickname Icon"
                     )
                 })
-                var password by remember { mutableStateOf("") }
-                TextArea(value = password, onValueChange = {newText -> password = newText}, modifier = Modifier.fillMaxWidth(), label = "Password", icon = {
+                TextArea(value = viewModel.user.value.password, onValueChange = {viewModel.updatePassword(it)}, modifier = Modifier.fillMaxWidth(), label = "Password", icon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
                         contentDescription = "Password Icon"
                     )},
                     visualTransformation = PasswordVisualTransformation(),
                     )
-                var confirmPassword by remember { mutableStateOf("") }
-                TextArea(value = confirmPassword, onValueChange = {newText -> confirmPassword = newText}, modifier = Modifier.fillMaxWidth(), label = "Password Confirmation", icon = {
+                TextArea(value = viewModel.confirmPassword.value, onValueChange = {newText -> viewModel.confirmPassword.value = newText}, modifier = Modifier.fillMaxWidth(), label = "Password Confirmation", icon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
                         contentDescription = "Password Icon"
                     )},
                     visualTransformation = PasswordVisualTransformation(),
                     )
-                var cityCode by remember { mutableStateOf("") }
-                TextArea(value = cityCode, onValueChange = {newText -> cityCode = newText}, modifier = Modifier.fillMaxWidth(), label = "City Code", icon = {
+                TextArea(value = viewModel.user.value.cityCode, onValueChange = {viewModel.updateCityCode(it)}, modifier = Modifier.fillMaxWidth(), label = "City Code", icon = {
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = "CityCode Icon"
                     )
                 })
-                var city by remember { mutableStateOf("") }
-                TextArea(value = city, onValueChange = {newText -> city = newText}, modifier = Modifier.fillMaxWidth(), label = "City", icon = {
+                TextArea(value = viewModel.user.value.city, onValueChange = {viewModel.updateCity(it)}, modifier = Modifier.fillMaxWidth(), label = "City", icon = {
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = "City Icon"
                     )
                 })
-                var phoneNumber by remember { mutableStateOf("") }
-                TextArea(value = phoneNumber, onValueChange = {newtext -> phoneNumber = newtext}, modifier = Modifier.fillMaxWidth(), label = "Phone Number", icon = {
+                TextArea(value = viewModel.user.value.phone, onValueChange = {viewModel.updatePhone(it)}, modifier = Modifier.fillMaxWidth(), label = "Phone Number", icon = {
                     Icon(
                         imageVector = Icons.Default.Phone,
                         contentDescription = "PhoneNumber Icon"
                     )
                 })
-                GradientButton(onClick = {}, text = "S'inscrire", modifier = Modifier.fillMaxWidth())
+                GradientButton(onClick = {viewModel.onSignupCheck()}, text = "S'inscrire", modifier = Modifier.fillMaxWidth())
+                if (viewModel.showDialog.value) {
+                    DialogBox(message = viewModel.dialogMessage.value, onDismiss = { viewModel.showDialog.value = false }, modifier = Modifier.padding(top = 40.dp))
+                }
             }
         }
     }
@@ -137,6 +129,6 @@ fun SignupFormPage() {
 @Composable
 fun SignupPreview() {
     AppBackground {
-        SignupFormPage()
+        SignupFormPage(viewModel = SignupViewModel())
     }
 }
