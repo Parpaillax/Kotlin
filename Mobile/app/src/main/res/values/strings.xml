@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">DemoKotlin</string>
+    <string name="title_activity_login_form_page">LoginFormPage</string>
+    <string name="title_activity_signup">SignupActivity</string>
+    <string name="title_activity_forgot_password">ForgotPasswordActivity</string>
+    <string name="title_activity_login_view_model">LoginViewModel</string>
+    <string name="title_activity_forgot_password_view_modele">ForgotPasswordViewModele</string>
+    <string name="title_activity_signup_view_model">SignupViewModel</string>
+    <string name="title_activity_movie">MovieActivity</string>
+    <string name="title_activity_movie_view_model">MovieViewModel</string>
+    <string name="title_activity_movie_id">MovieIdActivity</string>
+    <string name="title_activity_movie_edit">MovieEditActivity</string>
+    <string name="title_activity_nav_host">NavHost</string>
+</resources>
