@@ -1,6 +1,5 @@
 package com.example.demokotlin.auth
 
-import SignupViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.demokotlin.auth.viewmodel.AuthViewModel
 import com.example.demokotlin.ui.theme.AppBackground
 import com.example.demokotlin.ui.theme.DialogBox
 import com.example.demokotlin.ui.theme.GradientButton
@@ -42,14 +42,14 @@ class SignupActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppBackground {
-                SignupFormPage(viewModel = SignupViewModel())
+                SignupFormPage(viewModel = AuthViewModel())
             }
         }
     }
 }
 
 @Composable
-fun SignupFormPage(viewModel: SignupViewModel) {
+fun SignupFormPage(viewModel: AuthViewModel) {
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.Transparent) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             Column(modifier = Modifier.padding(40.dp)) {
@@ -129,6 +129,6 @@ fun SignupFormPage(viewModel: SignupViewModel) {
 @Composable
 fun SignupPreview() {
     AppBackground {
-        SignupFormPage(viewModel = SignupViewModel())
+        SignupFormPage(viewModel = AuthViewModel())
     }
 }

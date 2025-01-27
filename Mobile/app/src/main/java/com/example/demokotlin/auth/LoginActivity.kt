@@ -1,6 +1,5 @@
 package com.example.demokotlin.auth
 
-import LoginViewModel
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -35,6 +34,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.demokotlin.auth.viewmodel.AuthViewModel
 import com.example.demokotlin.movie.MovieActivity
 import com.example.demokotlin.ui.theme.AppBackground
 import com.example.demokotlin.ui.theme.DialogBox
@@ -47,14 +47,14 @@ class LoginActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppBackground {
-                LoginFormPage(viewModel = LoginViewModel())
+                LoginFormPage(viewModel = AuthViewModel())
             }
         }
     }
 }
 
 @Composable
-fun LoginFormPage(viewModel: LoginViewModel) {
+fun LoginFormPage(viewModel: AuthViewModel) {
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.Transparent) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             val context = LocalContext.current
@@ -81,13 +81,13 @@ fun LoginFormPage(viewModel: LoginViewModel) {
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
-                TextArea(value = viewModel.email.value, onValueChange = { newText -> viewModel.email.value = newText }, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
+                TextArea(value = viewModel.cred.value.email, onValueChange = { viewModel.updateEmail(it) }, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
                     Icon(
                         imageVector = Icons.Default.Email,
                         contentDescription = "Email Icon"
                     )},
                 )
-                TextArea(value = viewModel.password.value, onValueChange = {newText -> viewModel.password.value = newText}, modifier = Modifier.fillMaxWidth(), label = "Password", icon = {
+                TextArea(value = viewModel.cred.value.password, onValueChange = {viewModel.updatePassword(it)}, modifier = Modifier.fillMaxWidth(), label = "Password", icon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
                         contentDescription = "Password Icon"
@@ -99,7 +99,7 @@ fun LoginFormPage(viewModel: LoginViewModel) {
                     .clickable(onClick = { navigateToForgotPassword(context) }), contentAlignment = Alignment.Center) {
                     Text(text = "J'ai oublié mon mot de passe !", textAlign = TextAlign.Center, style = TextStyle(textDecoration = TextDecoration.Underline))
                 }
-                GradientButton(onClick = {navigateToMoviesList(context)}, text = "Se connecter", modifier = Modifier.fillMaxWidth())
+                GradientButton(onClick = {viewModel.onLoginClicked(context, viewModel.cred.value)}, text = "Se connecter", modifier = Modifier.fillMaxWidth())
                 Column(modifier = Modifier.padding(vertical = 160.dp)) {
                     Text(text= "Toujours pas inscris ?!", textAlign = TextAlign.Center, modifier = Modifier
                         .fillMaxWidth()
@@ -140,6 +140,6 @@ fun navigateToMoviesList(context: Context) {
 @Composable
 fun LoginPreview() {
     AppBackground {
-        LoginFormPage(viewModel = LoginViewModel())
+        LoginFormPage(viewModel = AuthViewModel())
     }
 }

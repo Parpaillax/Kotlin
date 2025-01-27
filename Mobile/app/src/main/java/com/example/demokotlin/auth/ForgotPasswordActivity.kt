@@ -1,6 +1,5 @@
 package com.example.demokotlin.auth
 
-import ForgotPasswordViewModele
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,15 +17,12 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.demokotlin.auth.viewmodel.AuthViewModel
 import com.example.demokotlin.ui.theme.AppBackground
 import com.example.demokotlin.ui.theme.DialogBox
 import com.example.demokotlin.ui.theme.GradientButton
@@ -38,14 +34,14 @@ class ForgotPasswordActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppBackground {
-                ForgotPasswordFormPage(viewModel = ForgotPasswordViewModele())
+                ForgotPasswordFormPage(viewModel = AuthViewModel())
             }
         }
     }
 }
 
 @Composable
-fun ForgotPasswordFormPage(viewModel: ForgotPasswordViewModele) {
+fun ForgotPasswordFormPage(viewModel: AuthViewModel) {
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.Transparent) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             Column(modifier = Modifier.padding(vertical = 60.dp)) {
@@ -60,7 +56,7 @@ fun ForgotPasswordFormPage(viewModel: ForgotPasswordViewModele) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)) {
-                TextArea(value = viewModel.email.value, onValueChange = {newText -> viewModel.email.value = newText}, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
+                TextArea(value = viewModel.user.value.email, onValueChange = {viewModel.updateEmail(it)}, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
                     Icon(
                         imageVector = Icons.Default.Email,
                         contentDescription = "Email Icon"
@@ -83,6 +79,6 @@ fun ForgotPasswordFormPage(viewModel: ForgotPasswordViewModele) {
 @Composable
 fun GreetingPreview2() {
     AppBackground {
-        ForgotPasswordFormPage(viewModel = ForgotPasswordViewModele())
+        ForgotPasswordFormPage(viewModel = AuthViewModel())
     }
 }
