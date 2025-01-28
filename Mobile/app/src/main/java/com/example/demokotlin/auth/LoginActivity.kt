@@ -81,13 +81,13 @@ fun LoginFormPage(viewModel: AuthViewModel) {
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
-                TextArea(value = viewModel.cred.value.email, onValueChange = { viewModel.updateEmail(it) }, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
+                TextArea(value = viewModel.cred.value.email, onValueChange = { viewModel.updateEmailCred(it) }, modifier = Modifier.fillMaxWidth(), label = "Email", icon = {
                     Icon(
                         imageVector = Icons.Default.Email,
                         contentDescription = "Email Icon"
                     )},
                 )
-                TextArea(value = viewModel.cred.value.password, onValueChange = {viewModel.updatePassword(it)}, modifier = Modifier.fillMaxWidth(), label = "Password", icon = {
+                TextArea(value = viewModel.cred.value.password, onValueChange = {viewModel.updatePasswordCred(it)}, modifier = Modifier.fillMaxWidth(), label = "Password", icon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
                         contentDescription = "Password Icon"
@@ -96,17 +96,20 @@ fun LoginFormPage(viewModel: AuthViewModel) {
                 )
                 Box(modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(onClick = { navigateToForgotPassword(context) }), contentAlignment = Alignment.Center) {
+                    .clickable(onClick = { viewModel.navigateToMoviesList(context) }), contentAlignment = Alignment.Center) {
                     Text(text = "J'ai oublié mon mot de passe !", textAlign = TextAlign.Center, style = TextStyle(textDecoration = TextDecoration.Underline))
                 }
-                GradientButton(onClick = {viewModel.onLoginClicked(context, viewModel.cred.value)}, text = "Se connecter", modifier = Modifier.fillMaxWidth())
+                GradientButton(onClick = {viewModel.onLoginClicked(context, viewModel.cred.value) }, text = "Se connecter", modifier = Modifier.fillMaxWidth())
+                Box {
+                    GradientButton(onClick = {viewModel.disconnect(context)}, text="Se déconnecter", modifier = Modifier.fillMaxWidth())
+                }
                 Column(modifier = Modifier.padding(vertical = 160.dp)) {
                     Text(text= "Toujours pas inscris ?!", textAlign = TextAlign.Center, modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 5.dp))
                     Box(modifier = Modifier
                         .fillMaxWidth()
-                        .clickable(onClick = { navigateToSignUpActivity(context) }), contentAlignment = Alignment.Center) {
+                        .clickable(onClick = { viewModel.navigateToSignUpActivity(context) }), contentAlignment = Alignment.Center) {
                         Text(text = "S'inscire", textAlign = TextAlign.Center, style = TextStyle(textDecoration = TextDecoration.Underline))
                     }
                 }
@@ -122,18 +125,6 @@ fun LoginFormPage(viewModel: AuthViewModel) {
     }
 
 
-}
-
-fun navigateToSignUpActivity(context: Context) {
-    context.startActivity(Intent(context, SignupActivity::class.java))
-}
-
-fun navigateToForgotPassword(context: Context) {
-    context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
-}
-
-fun navigateToMoviesList(context: Context) {
-    context.startActivity(Intent(context, MovieActivity::class.java))
 }
 
 @Preview(showBackground = true)

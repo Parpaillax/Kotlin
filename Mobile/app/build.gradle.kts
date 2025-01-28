@@ -64,4 +64,6 @@ dependencies {
     implementation(libs.moshi)
     // Coroutines
     implementation(libs.coroutines)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore)
 }

@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.demokotlin.auth.navigateToMoviesList
 import com.example.demokotlin.movie.viewmodel.Movie
 
 private val DarkColorScheme = darkColorScheme(

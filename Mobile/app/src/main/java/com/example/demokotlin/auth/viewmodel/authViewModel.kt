@@ -1,12 +1,16 @@
 package com.example.demokotlin.auth.viewmodel
 
 import android.content.Context
-import androidx.compose.runtime.State
+import android.content.Intent
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.demokotlin.api.RetrofitInstance
 import com.example.demokotlin.api.UserApi
+import com.example.demokotlin.auth.ForgotPasswordActivity
+import com.example.demokotlin.auth.SignupActivity
+import com.example.demokotlin.movie.MovieActivity
 import kotlinx.coroutines.launch
 
 data class User(
@@ -23,11 +27,8 @@ data class Credential(
     val password: String = ""
 )
 
-data class LoginResponse(val token: String)
-
 class AuthViewModel : ViewModel() {
     private val userApi = RetrofitInstance.retrofit.create(UserApi::class.java)
-
     val user = mutableStateOf(User())
     val cred = mutableStateOf(Credential())
     var confirmPassword = mutableStateOf("")
@@ -52,11 +53,14 @@ class AuthViewModel : ViewModel() {
 
     // Fonction appelée lors du clic sur le bouton de connexion
     fun onLoginClicked(context: Context, cred: Credential) {
-        if (user.value.email.isNotEmpty() && user.value.password.isNotEmpty()) {
-            dialogMessage.value = "Vous êtes connecté(e) avec succès"
+        if (cred.email.isNotEmpty() && cred.password.isNotEmpty()) {
             viewModelScope.launch {
                 try {
                     val user = userApi.login(cred)
+                    val dataStore = SettingsDataStore(context)
+                    dataStore.saveToken(user)
+                    dialogMessage.value = "Vous êtes connecté(e) avec succès ${dataStore.readFromDataStore()}"
+                    navigateToMoviesList(context)
                 } catch(e: Exception) {
                     e.printStackTrace()
                 }
@@ -99,5 +103,32 @@ class AuthViewModel : ViewModel() {
 
     fun updatePhone(phone: String) {
         user.value = user.value.copy(phone = phone)
+    }
+
+    fun updateEmailCred(email: String) {
+        cred.value = cred.value.copy(email = email)
+    }
+
+    fun updatePasswordCred(password: String) {
+        cred.value = cred.value.copy(password = password)
+    }
+
+    fun navigateToSignUpActivity(context: Context) {
+        context.startActivity(Intent(context, SignupActivity::class.java))
+    }
+
+    fun navigateToForgotPassword(context: Context) {
+        context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
+    }
+
+    fun navigateToMoviesList(context: Context) {
+        context.startActivity(Intent(context, MovieActivity::class.java))
+    }
+
+    fun disconnect(context: Context) {
+        viewModelScope.launch {
+            val dataStore = SettingsDataStore(context)
+            dataStore.clearToken()
+        }
     }
 }

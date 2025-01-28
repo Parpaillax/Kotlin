@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.demokotlin.api.MovieApi
 import com.example.demokotlin.api.RetrofitInstance
+import com.example.demokotlin.auth.viewmodel.SettingsDataStore
 import com.example.demokotlin.movie.MovieActivity
 import com.example.demokotlin.movie.MovieEditActivity
 import com.example.demokotlin.movie.MovieIdActivity

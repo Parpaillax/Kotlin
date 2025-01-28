@@ -3,6 +3,7 @@ package com.example.demokotlin.movie
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,15 +35,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.example.demokotlin.auth.LoginActivity
+import com.example.demokotlin.auth.viewmodel.SettingsDataStore
 import com.example.demokotlin.movie.viewmodel.MovieViewModel
 import com.example.demokotlin.ui.theme.AppBackground
+import com.example.demokotlin.ui.theme.GradientButton
 import com.example.demokotlin.ui.theme.MovieItemBox
 
 class MovieActivity : ComponentActivity() {
+    private lateinit var dataStoreManager: SettingsDataStore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        dataStoreManager = SettingsDataStore(this)
+        if (!dataStoreManager.isAuthenticated()) {
+            // Redirige vers l'écran de connexion
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish() // Ferme l'activité actuelle
+        }
         enableEdgeToEdge()
         setContent {
             AppBackground {

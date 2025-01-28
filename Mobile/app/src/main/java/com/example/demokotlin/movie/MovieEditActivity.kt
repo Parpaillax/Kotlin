@@ -29,14 +29,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.demokotlin.auth.LoginActivity
+import com.example.demokotlin.auth.viewmodel.SettingsDataStore
 import com.example.demokotlin.movie.viewmodel.MovieViewModel
 import com.example.demokotlin.ui.theme.AppBackground
 import com.example.demokotlin.ui.theme.GradientButton
 import com.example.demokotlin.ui.theme.TextArea
 
 class MovieEditActivity : ComponentActivity() {
+    private lateinit var dataStoreManager: SettingsDataStore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        dataStoreManager = SettingsDataStore(this)
+        if (!dataStoreManager.isAuthenticated()) {
+            // Redirige vers l'écran de connexion
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish() // Ferme l'activité actuelle
+        }
         val movieId = intent.getIntExtra("MOVIE_ID", -1)
         enableEdgeToEdge()
         setContent {
