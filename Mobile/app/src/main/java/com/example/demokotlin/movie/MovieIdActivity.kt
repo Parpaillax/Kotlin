@@ -32,19 +32,30 @@ import com.example.demokotlin.auth.LoginActivity
 import com.example.demokotlin.auth.viewmodel.SettingsDataStore
 import com.example.demokotlin.movie.viewmodel.MovieViewModel
 import com.example.demokotlin.ui.theme.AppBackground
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 class MovieIdActivity : ComponentActivity() {
     private lateinit var dataStoreManager: SettingsDataStore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dataStoreManager = SettingsDataStore(this)
-        if (!dataStoreManager.isAuthenticated()) {
+        val isAuthenticated = runBlocking {
+            dataStoreManager.isAuthenticatedFlow.first()
+        }
+        if (!isAuthenticated) {
             // Redirige vers l'écran de connexion
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish() // Ferme l'activité actuelle
         }
         val movieId = intent.getIntExtra("MOVIE_ID", -1)
+        if (movieId < 1) {
+//            Si l'ID n'existe pas, je redirige vers la liste des movies
+            val intent = Intent(this, MovieActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
         enableEdgeToEdge()
         setContent {
             AppBackground {
@@ -56,15 +67,15 @@ class MovieIdActivity : ComponentActivity() {
 
 @Composable
 fun MovieIdFormPage(movieId: Int, viewModel: MovieViewModel) {
-    val movie = viewModel.movieObj.value
     val isLoading = remember { mutableStateOf(true) }
     LaunchedEffect(movieId) {
         viewModel.fetchOneMovie(movieId)
         isLoading.value = false
     }
+    val movie = remember { viewModel.movieObj }
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.Transparent) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            Column(modifier = Modifier.padding(vertical = 20.dp)) {
+            Column{
                 Icon(
                     imageVector = Icons.Sharp.PlayArrow,
                     contentDescription = "Movie Icon",
@@ -89,10 +100,10 @@ fun MovieIdFormPage(movieId: Int, viewModel: MovieViewModel) {
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    Text(text = "Title: ${movie.title}", style = MaterialTheme.typography.titleLarge)
-                    Text(text = "Description: ${movie.description}", style = MaterialTheme.typography.bodyMedium)
-                    Text(text = "Duration: ${movie.duration} min", style = MaterialTheme.typography.bodyMedium)
-                    Text(text = "Year: ${movie.year}", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Title: ${movie.value.title}", style = MaterialTheme.typography.titleLarge)
+                    Text(text = "Description: ${movie.value.description}", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Duration: ${movie.value.duration} min", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Year: ${movie.value.year}", style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }

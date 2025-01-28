@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.demokotlin.api.MovieApi
 import com.example.demokotlin.api.RetrofitInstance
 import com.example.demokotlin.auth.viewmodel.SettingsDataStore
@@ -58,6 +59,17 @@ class MovieViewModel : ViewModel() {
             try {
                 movieApi.editMovie(id, movie)
             } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun addOneMovie(movie: Movie, navController: NavController) {
+        viewModelScope.launch {
+            try {
+                movieApi.addMovie(movie)
+                navController.navigate("movies")
+            } catch(e: Exception) {
                 e.printStackTrace()
             }
         }

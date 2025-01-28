@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.demokotlin.api.RetrofitInstance
 import com.example.demokotlin.api.UserApi
 import com.example.demokotlin.auth.ForgotPasswordActivity
@@ -37,22 +39,7 @@ class AuthViewModel : ViewModel() {
     var dialogMessage = mutableStateOf("")
 
     // Fonction appelée lors du clic sur le bouton de connexion
-    fun onSignupCheck() {
-        if (user.value.pseudo.isNotEmpty() && user.value.email.isNotEmpty() && user.value.password.isNotEmpty() &&
-            user.value.cityCode.isNotEmpty() && user.value.city.isNotEmpty() && user.value.phone.isNotEmpty()) {
-            dialogMessage.value = "$user"
-            showDialog.value = true
-        } else if (!user.value.password.equals(confirmPassword)) {
-            dialogMessage.value = "Vos mot de passe ne correspondent pas !"
-            showDialog.value = true
-        } else {
-            dialogMessage.value = "Veuillez renseigner tous les champs afin de vous inscrire"
-            showDialog.value = true
-        }
-    }
-
-    // Fonction appelée lors du clic sur le bouton de connexion
-    fun onLoginClicked(context: Context, cred: Credential) {
+    fun onLoginClicked(context: Context, cred: Credential, navController: NavController) {
         if (cred.email.isNotEmpty() && cred.password.isNotEmpty()) {
             viewModelScope.launch {
                 try {
@@ -60,13 +47,31 @@ class AuthViewModel : ViewModel() {
                     val dataStore = SettingsDataStore(context)
                     dataStore.saveToken(user)
                     dialogMessage.value = "Vous êtes connecté(e) avec succès ${dataStore.readFromDataStore()}"
-                    navigateToMoviesList(context)
+                    navController.navigate("movies")
                 } catch(e: Exception) {
                     e.printStackTrace()
                 }
             }
         } else {
             dialogMessage.value = "Il vous manque des informations de connexion"
+        }
+        showDialog.value = true
+    }
+
+    fun onSignupCheck(user: User, confirmPassword: String) {
+        if (!user.password.equals(confirmPassword)) {
+            dialogMessage.value = "Vos mot de passe ne correspondent pas !"
+        } else if (user.password.isNotEmpty() && user.pseudo.isNotEmpty() && user.email.isNotEmpty()) {
+            viewModelScope.launch {
+                try {
+                    userApi.signup(user)
+                    dialogMessage.value = "Inscirption terminée !"
+                } catch(e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        } else {
+            dialogMessage.value = "Veuillez renseigner tous les champs afin de vous inscrire"
         }
         showDialog.value = true
     }
@@ -111,24 +116,5 @@ class AuthViewModel : ViewModel() {
 
     fun updatePasswordCred(password: String) {
         cred.value = cred.value.copy(password = password)
-    }
-
-    fun navigateToSignUpActivity(context: Context) {
-        context.startActivity(Intent(context, SignupActivity::class.java))
-    }
-
-    fun navigateToForgotPassword(context: Context) {
-        context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
-    }
-
-    fun navigateToMoviesList(context: Context) {
-        context.startActivity(Intent(context, MovieActivity::class.java))
-    }
-
-    fun disconnect(context: Context) {
-        viewModelScope.launch {
-            val dataStore = SettingsDataStore(context)
-            dataStore.clearToken()
-        }
     }
 }

@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.example.demokotlin.auth.LoginFormPage
 import com.example.demokotlin.auth.viewmodel.AuthViewModel
 import com.example.demokotlin.ui.theme.AppBackground
@@ -16,7 +17,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppBackground {
-                LoginFormPage(viewModel = AuthViewModel())
+                MainNavHost()
             }
         }
     }
@@ -26,6 +27,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     AppBackground {
-        LoginFormPage(viewModel = AuthViewModel())
+        LoginFormPage(viewModel = AuthViewModel(), navController = rememberNavController())
     }
 }

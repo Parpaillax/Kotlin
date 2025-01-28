@@ -1,7 +1,5 @@
 package com.example.demokotlin.auth
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -34,8 +32,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.demokotlin.auth.viewmodel.AuthViewModel
-import com.example.demokotlin.movie.MovieActivity
 import com.example.demokotlin.ui.theme.AppBackground
 import com.example.demokotlin.ui.theme.DialogBox
 import com.example.demokotlin.ui.theme.GradientButton
@@ -46,19 +45,20 @@ class LoginActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
             AppBackground {
-                LoginFormPage(viewModel = AuthViewModel())
+                LoginFormPage(viewModel = AuthViewModel(), navController = navController)
             }
         }
-    }
+     }
 }
 
 @Composable
-fun LoginFormPage(viewModel: AuthViewModel) {
+fun LoginFormPage(viewModel: AuthViewModel, navController: NavController) {
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.Transparent) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             val context = LocalContext.current
-            Column(modifier = Modifier.padding(vertical = 60.dp)) {
+            Column(modifier = Modifier.padding(vertical = 45.dp)) {
                 Icon(
                     imageVector = Icons.Sharp.AccountCircle,
                     contentDescription = "Login Icon",
@@ -96,23 +96,11 @@ fun LoginFormPage(viewModel: AuthViewModel) {
                 )
                 Box(modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(onClick = { viewModel.navigateToMoviesList(context) }), contentAlignment = Alignment.Center) {
+                    .clickable(onClick = { navController.navigate("movies") }), contentAlignment = Alignment.Center) {
                     Text(text = "J'ai oublié mon mot de passe !", textAlign = TextAlign.Center, style = TextStyle(textDecoration = TextDecoration.Underline))
                 }
-                GradientButton(onClick = {viewModel.onLoginClicked(context, viewModel.cred.value) }, text = "Se connecter", modifier = Modifier.fillMaxWidth())
-                Box {
-                    GradientButton(onClick = {viewModel.disconnect(context)}, text="Se déconnecter", modifier = Modifier.fillMaxWidth())
-                }
-                Column(modifier = Modifier.padding(vertical = 160.dp)) {
-                    Text(text= "Toujours pas inscris ?!", textAlign = TextAlign.Center, modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 5.dp))
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = { viewModel.navigateToSignUpActivity(context) }), contentAlignment = Alignment.Center) {
-                        Text(text = "S'inscire", textAlign = TextAlign.Center, style = TextStyle(textDecoration = TextDecoration.Underline))
-                    }
-                }
+                GradientButton(onClick = {viewModel.onLoginClicked(context, viewModel.cred.value, navController) }, text = "Se connecter", modifier = Modifier.fillMaxWidth())
+                GradientButton(onClick = {navController.navigate("signup")}, text="S'inscrire", modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
                 if (viewModel.showDialog.value) {
                     DialogBox(
                         message = viewModel.dialogMessage.value,
@@ -123,14 +111,13 @@ fun LoginFormPage(viewModel: AuthViewModel) {
             }
         }
     }
-
-
 }
 
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
+    val navController = rememberNavController()
     AppBackground {
-        LoginFormPage(viewModel = AuthViewModel())
+        LoginFormPage(viewModel = AuthViewModel(), navController = navController)
     }
 }

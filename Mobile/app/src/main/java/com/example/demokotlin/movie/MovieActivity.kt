@@ -1,9 +1,7 @@
 package com.example.demokotlin.movie
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -35,12 +33,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.demokotlin.auth.LoginActivity
 import com.example.demokotlin.auth.viewmodel.SettingsDataStore
 import com.example.demokotlin.movie.viewmodel.MovieViewModel
 import com.example.demokotlin.ui.theme.AppBackground
-import com.example.demokotlin.ui.theme.GradientButton
 import com.example.demokotlin.ui.theme.MovieItemBox
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 class MovieActivity : ComponentActivity() {
     private lateinit var dataStoreManager: SettingsDataStore
@@ -48,7 +49,10 @@ class MovieActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dataStoreManager = SettingsDataStore(this)
-        if (!dataStoreManager.isAuthenticated()) {
+        val isAuthenticated = runBlocking {
+            dataStoreManager.isAuthenticatedFlow.first()
+        }
+        if (!isAuthenticated) {
             // Redirige vers l'écran de connexion
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -56,55 +60,59 @@ class MovieActivity : ComponentActivity() {
         }
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
             AppBackground {
-                MovieFormPage(viewModel = MovieViewModel())
+                MovieFormPage(viewModel = MovieViewModel(), navController = navController)
             }
         }
     }
 }
 
 @Composable
-fun MovieFormPage(viewModel: MovieViewModel) {
+fun MovieFormPage(viewModel: MovieViewModel, navController: NavController) {
     val isLoading = remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
         viewModel.fetchMovies()
         isLoading.value = false
     }
-    Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.Transparent) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            val context = LocalContext.current
-            Column(modifier = Modifier.padding(vertical = 20.dp)) {
-                Icon(
-                    imageVector = Icons.Sharp.PlayArrow,
-                    contentDescription = "Movie Icon",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(90.dp)
-                        .width(90.dp),
-                )
-                Text(
-                    text = "Liste des films accessible sur l'application",
-                    textAlign = TextAlign.Center,
-                    fontSize = 16.sp,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-            if (isLoading.value) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+    val moviesList = remember { viewModel.moviesList }
+    AppBackground {
+        Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.Transparent) { innerPadding ->
+            Column(modifier = Modifier.padding(innerPadding)) {
+                val context = LocalContext.current
+                Column {
+                    Icon(
+                        imageVector = Icons.Sharp.PlayArrow,
+                        contentDescription = "Movie Icon",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(90.dp)
+                            .width(90.dp),
+                    )
+                    Text(
+                        text = "Liste des films accessible sur l'application",
+                        textAlign = TextAlign.Center,
+                        fontSize = 16.sp,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
-            } else {
-                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(viewModel.moviesList.value) { movie ->
-                        MovieItemBox(
-                            movie = movie,
-                            onSee = {viewModel.goToMovieId(context, movie.customId)},
-                            onEdit = {viewModel.goToEditMovie(context, movie.customId)},
-                            onDelete = {viewModel.deleteMovieId(movie.customId); viewModel.navigateToMoviesList(context)}
-                        )
+                if (isLoading.value) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(moviesList.value) { movie ->
+                            MovieItemBox(
+                                movie = movie,
+                                onSee = {navController.navigate("movie_id/${movie.customId}")},
+                                onEdit = {navController.navigate("movie_edit/${movie.customId}")},
+                                onDelete = {viewModel.deleteMovieId(movie.customId); navController.navigate("movies")}
+                            )
+                        }
                     }
                 }
             }
@@ -115,7 +123,8 @@ fun MovieFormPage(viewModel: MovieViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun MoviePreview() {
+    val navController = rememberNavController()
     AppBackground {
-        MovieFormPage(viewModel = MovieViewModel())
+        MovieFormPage(viewModel = MovieViewModel(), navController = navController)
     }
 }

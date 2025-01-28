@@ -14,11 +14,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -36,6 +41,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.demokotlin.movie.viewmodel.Movie
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -119,6 +127,23 @@ fun GradientButton(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppTopBar(onMenuClick: () -> Unit = {}) {
+    TopAppBar(
+        title = { Text("", color = Color.Black) },
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.Default.Menu,
+                contentDescription = "Menu",
+                modifier = Modifier.clickable { onMenuClick() },
+                tint = Color.Black
+            )
+        },
+        colors = TopAppBarColors(containerColor = Color.Transparent, scrolledContainerColor = Color.Transparent, titleContentColor = Color.Transparent, navigationIconContentColor = Color.Transparent, actionIconContentColor = Color.Transparent)
+    )
+}
+
 @Composable
 fun TextArea(
     value: String,
@@ -199,25 +224,48 @@ fun MovieItemBox(
 }
 
 @Composable
-fun DemoKotlinTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+fun MenuBox(
+    isAuthenticated: Boolean,
+    onNavigate: (String) -> Unit,
+    onLogout: suspend () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    Column(
+        modifier = Modifier
+            .border(1.dp, Color.Gray)
+            .background(Color.LightGray)
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        if (isAuthenticated) {
+            Text(
+                text = "Ajouter un film",
+                modifier = Modifier.clickable { onNavigate("movie_add") },
+                color = Color.Blue
+            )
+            Text(
+                text = "Liste des films",
+                modifier = Modifier.clickable { onNavigate("movies") },
+                color = Color.Blue
+            )
+            Text(
+                text = "Se déconnecter",
+                modifier = Modifier.clickable {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        onLogout()
+                    } },
+                color = Color.Red
+            )
+        } else {
+            Text(
+                text = "Se connecter",
+                modifier = Modifier.clickable { onNavigate("login") },
+                color = Color.Blue
+            )
+            Text(
+                text = "S'inscrire",
+                modifier = Modifier.clickable { onNavigate("signup") },
+                color = Color.Blue
+            )
         }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
 }

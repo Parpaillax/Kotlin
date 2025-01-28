@@ -7,4 +7,6 @@
     <string name="title_activity_movie_view_model">MovieViewModel</string>
     <string name="title_activity_movie_id">MovieIdActivity</string>
     <string name="title_activity_movie_edit">MovieEditActivity</string>
+    <string name="title_activity_nav_host">NavHost</string>
+    <string name="title_activity_movie_add">MovieAddActivity</string>
 </resources>

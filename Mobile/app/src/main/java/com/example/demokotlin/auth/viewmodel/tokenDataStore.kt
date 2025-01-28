@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -42,13 +43,8 @@ class SettingsDataStore(private val context: Context) {
         }
     }
 
-    fun isAuthenticated(): Boolean {
-        return runBlocking {
-            val token = context.dataStore.data
-                .map { preferences -> preferences[TOKEN_KEY] }
-                .first() // Récupère la valeur actuelle
-            Log.d("Token", token.toString())
-            token != null && token.isNotBlank()
+    val isAuthenticatedFlow: Flow<Boolean>
+        get() = context.dataStore.data.map { preferences ->
+            preferences[TOKEN_KEY]?.isNotEmpty() == true
         }
-    }
 }

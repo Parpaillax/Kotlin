@@ -25,11 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.demokotlin.auth.viewmodel.AuthViewModel
 import com.example.demokotlin.ui.theme.AppBackground
 import com.example.demokotlin.ui.theme.DialogBox
@@ -52,7 +54,7 @@ class SignupActivity : ComponentActivity() {
 fun SignupFormPage(viewModel: AuthViewModel) {
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.Transparent) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            Column(modifier = Modifier.padding(40.dp)) {
+            Column(modifier = Modifier.padding(20.dp)) {
                 Icon(
                     imageVector = Icons.Default.AddCircle,
                     contentDescription = "Signup Icon",
@@ -116,7 +118,7 @@ fun SignupFormPage(viewModel: AuthViewModel) {
                         contentDescription = "PhoneNumber Icon"
                     )
                 })
-                GradientButton(onClick = {viewModel.onSignupCheck()}, text = "S'inscrire", modifier = Modifier.fillMaxWidth())
+                GradientButton(onClick = {viewModel.onSignupCheck(viewModel.user.value, viewModel.confirmPassword.value )}, text = "S'inscrire", modifier = Modifier.fillMaxWidth())
                 if (viewModel.showDialog.value) {
                     DialogBox(message = viewModel.dialogMessage.value, onDismiss = { viewModel.showDialog.value = false }, modifier = Modifier.padding(top = 40.dp))
                 }

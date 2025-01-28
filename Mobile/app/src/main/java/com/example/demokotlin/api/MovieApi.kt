@@ -23,6 +23,6 @@ interface MovieApi {
     @DELETE("movie/delete/{id}")
     suspend fun deleteMovie(@Path("id") id: Int)
 
-    @POST("movies")
-    suspend fun saveMovie(@Body movie: Movie): Response<Movie>
+    @POST("movie")
+    suspend fun addMovie(@Body movie: Movie): Response<Movie>
 }

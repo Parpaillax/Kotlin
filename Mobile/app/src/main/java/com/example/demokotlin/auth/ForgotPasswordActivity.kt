@@ -77,7 +77,7 @@ fun ForgotPasswordFormPage(viewModel: AuthViewModel) {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview2() {
+fun ForgotPasswordPreview() {
     AppBackground {
         ForgotPasswordFormPage(viewModel = AuthViewModel())
     }
