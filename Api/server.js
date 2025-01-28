@@ -3,6 +3,7 @@ import express from "express";
 import mongoose from "mongoose";
 import bodyParser from 'body-parser';
 import movieRoutes from './routes/movie-routes.js';
+import userRoutes from "./routes/user-routes.js";
 
 // Création de l'application Express
 const app = express();
@@ -21,6 +22,7 @@ mongoose.connect('mongodb://localhost:27017/MoviesKotlin')
 
 // Routes pour les films
 app.use('/api', movieRoutes);
+app.use('/api', userRoutes);
 
 // Démarrer le serveur
 const port = 3000;
